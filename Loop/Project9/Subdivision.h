@@ -26,15 +26,14 @@ typedef pair<SS_Vertex*, SS_Vertex*> SS_VertexPair;
 #endif
 
 // Feel free to replace this class with one that integrates better with your project
-class Vertex
-{
-public:
-	Vertex(){index = -1;}
-	Point pos;
-	Vector texel;
-	int index;
-};
-
+//class Vertex
+//{
+//public:
+//	Vertex(){index = -1;}
+//	Point pos;
+//	Vector texel;
+//	int index;
+//};
 
 class SS_Vertex
 {
@@ -63,7 +62,7 @@ private:
 
 	int creationLevel;
 
-	const Vertex *cv;
+	//const Vertex *cv;
 
 	SS_Edge** GetEdgePointer( SS_Edge *ptr );
 	SS_Face** GetFacePointer( SS_Face *ptr );
@@ -73,8 +72,8 @@ private:
 
 	friend class SS_Surface;
 	friend class SS_Face;
-	friend bool operator!=( SS_Vertex*& v, const Vertex &cv );
-	friend bool operator==( SS_Vertex*& v, const Vertex &cv );
+	//friend bool operator!=( SS_Vertex*& v, const Vertex &cv );
+	//friend bool operator==( SS_Vertex*& v, const Vertex &cv );
 
 #if USE_MEM_POOL
 	void* operator new(size_t bytes);
@@ -90,8 +89,8 @@ private:
 };
 typedef vector<SS_Vertex*> SS_VertexList;
 
-bool operator!=( SS_Vertex*& v, const Vertex &cv );
-bool operator==( SS_Vertex*& v, const Vertex &cv );
+//bool operator!=( SS_Vertex*& v, const Vertex &cv );
+//bool operator==( SS_Vertex*& v, const Vertex &cv );
 
 
 class SS_Face
@@ -175,11 +174,12 @@ public:
 	~SS_Surface();
 
 	void Reset();
-
+	void ReadObjFromFile(const char* filename, float scale = 1.0);
 	void ReadObj(const char* filename, float scale = 1.0);
 	void WriteObj(const char* filename);
 
-	void AddFace( Vertex *cv1, Vertex *cv2, Vertex *cv3 );
+	void AddFaceOfIndex(int i1,int i2, int i3);
+	//void AddFace( Vertex *cv1, Vertex *cv2, Vertex *cv3 );
 	void UpdateNormals();
 
 	void Subdivide();
@@ -194,7 +194,7 @@ public:
 	void Draw( DRAWFLAGS flags = SOLID );
 
 protected:
-	SS_Vertex* _AddVertex( Vertex *cv );
+	//SS_Vertex* _AddVertex( Vertex *cv );
 	SS_Edge*  _AddEdge( SS_Vertex *v1, SS_Vertex *v2 );
 
 	void SubdivideEdge( SS_Edge *e );
@@ -216,7 +216,7 @@ protected:
 
 	int subdivisionLevel;
 
-	vector<Vertex*> vList;
+	//vector<Vertex*> vList;
 };
 
 #endif // SUBDIVISION_H

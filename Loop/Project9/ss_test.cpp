@@ -2,7 +2,7 @@
 #include <GL/glut.h>
 
 #include <math.h>
-
+#include <time.h>
 
 SS_Surface object;
 Point cameraPos(0, 0, -350);
@@ -10,6 +10,8 @@ Point cameraPos(0, 0, -350);
 float gScale = 800;
 
 int last_x, last_y, spin_x, spin_y;
+
+clock_t start, finish;
 
 void display(void)
 {
@@ -49,85 +51,85 @@ void motion(int x, int y)
 }
 
 
-void InitShape(int shape = 1)
-{
-	Vertex v1, v2, v3, v4, v5, v6, v7, v8;
-
-	v1.pos = Point(-30, 30, 30);
-	v2.pos = Point(-30, 30, -30);
-	v3.pos = Point( 30, 30, -30);
-	v4.pos = Point( 30, 30, 30);
-	v5.pos = Point(-30, -30, 30);
-	v6.pos = Point(-30, -30, -30);
-	v7.pos = Point( 30, -30, -30);
-	v8.pos = Point( 30, -30, 30);
-
-	object.Reset();
-
-	switch( shape )
-	{
-		case 1:
-		{
-			/*
-			 * Rectangle
-			 */
-			object.AddFace( &v1, &v3, &v2 );
-			object.AddFace( &v1, &v4, &v3 );
-			object.AddFace( &v5, &v6, &v8 );
-			object.AddFace( &v6, &v7, &v8 );
-			object.AddFace( &v1, &v2, &v6 );
-			object.AddFace( &v1, &v6, &v5 );
-			object.AddFace( &v2, &v3, &v7 );
-			object.AddFace( &v2, &v7, &v6 );
-			object.AddFace( &v3, &v8, &v7 );
-			object.AddFace( &v3, &v4, &v8 );
-			object.AddFace( &v1, &v5, &v4 );
-			object.AddFace( &v4, &v5, &v8 );
-			break;
-		}
-
-		case 2:
-		{
-			/*
-			 * Triangular Pyramid
-			 */
-			v1.pos = Point(0, 30, 0);
-			v2.pos = Point(0, -30, 0);
-			object.AddFace( &v1, &v6, &v5 );
-			object.AddFace( &v1, &v7, &v6 );
-			object.AddFace( &v1, &v8, &v7 );
-			object.AddFace( &v1, &v5, &v8 );
-			object.AddFace( &v6, &v2, &v5 );
-			object.AddFace( &v6, &v7, &v2 );
-			object.AddFace( &v7, &v8, &v2 );
-			object.AddFace( &v8, &v5, &v2 );
-			break;	
-		}
-
-		case 3:
-		{
-			/*
-			 * Sinusoidal Mesh
-			 */
-			#define MESH_SIZE 10.0
-			Vertex mesh[(int)MESH_SIZE][(int)MESH_SIZE];
-
-			for( int i = 0; i < MESH_SIZE; i++ )
-				for( int j = 0; j < MESH_SIZE; j++ )
-					mesh[i][j].pos = Point(
-							 -30 + (i/MESH_SIZE * 60)
-							, -20 + (j/MESH_SIZE * 40)
-							, 20 * sin( 3.1415926 / 180.0 * i * 2 * 360.0 / MESH_SIZE ) );
-			for( int i = 0; i < MESH_SIZE - 1; i++ )
-				for( int j = 0; j < MESH_SIZE - 1; j++ )
-				{
-					object.AddFace( &mesh[i][j], &mesh[i+1][j], &mesh[i+1][j+1] );
-					object.AddFace( &mesh[i][j], &mesh[i+1][j+1], &mesh[i][j+1] );
-				}
-			break;
-		}
-	}
-}
+//void InitShape(int shape = 1)
+//{
+//	Vertex v1, v2, v3, v4, v5, v6, v7, v8;
+//
+//	v1.pos = Point(-30, 30, 30);
+//	v2.pos = Point(-30, 30, -30);
+//	v3.pos = Point( 30, 30, -30);
+//	v4.pos = Point( 30, 30, 30);
+//	v5.pos = Point(-30, -30, 30);
+//	v6.pos = Point(-30, -30, -30);
+//	v7.pos = Point( 30, -30, -30);
+//	v8.pos = Point( 30, -30, 30);
+//
+//	object.Reset();
+//
+//	switch( shape )
+//	{
+//		case 1:
+//		{
+//			/*
+//			 * Rectangle
+//			 */
+//			object.AddFace( &v1, &v3, &v2 );
+//			object.AddFace( &v1, &v4, &v3 );
+//			object.AddFace( &v5, &v6, &v8 );
+//			object.AddFace( &v6, &v7, &v8 );
+//			object.AddFace( &v1, &v2, &v6 );
+//			object.AddFace( &v1, &v6, &v5 );
+//			object.AddFace( &v2, &v3, &v7 );
+//			object.AddFace( &v2, &v7, &v6 );
+//			object.AddFace( &v3, &v8, &v7 );
+//			object.AddFace( &v3, &v4, &v8 );
+//			object.AddFace( &v1, &v5, &v4 );
+//			object.AddFace( &v4, &v5, &v8 );
+//			break;
+//		}
+//
+//		case 2:
+//		{
+//			/*
+//			 * Triangular Pyramid
+//			 */
+//			v1.pos = Point(0, 30, 0);
+//			v2.pos = Point(0, -30, 0);
+//			object.AddFace( &v1, &v6, &v5 );
+//			object.AddFace( &v1, &v7, &v6 );
+//			object.AddFace( &v1, &v8, &v7 );
+//			object.AddFace( &v1, &v5, &v8 );
+//			object.AddFace( &v6, &v2, &v5 );
+//			object.AddFace( &v6, &v7, &v2 );
+//			object.AddFace( &v7, &v8, &v2 );
+//			object.AddFace( &v8, &v5, &v2 );
+//			break;	
+//		}
+//
+//		case 3:
+//		{
+//			/*
+//			 * Sinusoidal Mesh
+//			 */
+//			#define MESH_SIZE 10.0
+//			Vertex mesh[(int)MESH_SIZE][(int)MESH_SIZE];
+//
+//			for( int i = 0; i < MESH_SIZE; i++ )
+//				for( int j = 0; j < MESH_SIZE; j++ )
+//					mesh[i][j].pos = Point(
+//							 -30 + (i/MESH_SIZE * 60)
+//							, -20 + (j/MESH_SIZE * 40)
+//							, 20 * sin( 3.1415926 / 180.0 * i * 2 * 360.0 / MESH_SIZE ) );
+//			for( int i = 0; i < MESH_SIZE - 1; i++ )
+//				for( int j = 0; j < MESH_SIZE - 1; j++ )
+//				{
+//					object.AddFace( &mesh[i][j], &mesh[i+1][j], &mesh[i+1][j+1] );
+//					object.AddFace( &mesh[i][j], &mesh[i+1][j+1], &mesh[i][j+1] );
+//				}
+//			break;
+//		}
+//	}
+//}
 
 
 void renderScene(void)
@@ -163,7 +165,10 @@ void keyboard(unsigned char key, int x, int y)
 	{
 		case 32: // Space bar
 			// Subdivide the object when the space bar is hit
+			start = clock();
 			object.Subdivide();
+			finish = clock();
+			printf("time = %lf = %ld\n", (double)(finish - start) / CLOCKS_PER_SEC, finish-start);
 			break;
 
 		case 27: // Escape
@@ -186,17 +191,17 @@ void keyboard(unsigned char key, int x, int y)
 			cameraPos.x += 10;
 			break;
 
-		case 49: // Number 1
-			InitShape(1);
-			break;
+		//case 49: // Number 1
+		//	InitShape(1);
+		//	break;
 
-		case 50: // Number 2
-			InitShape(2);
-			break;
+		//case 50: // Number 2
+		//	InitShape(2);
+		//	break;
 
-		case 51: // Number 3
-			InitShape(3);
-			break;
+		//case 51: // Number 3
+		//	InitShape(3);
+		//	break;
 		case 'w':
 			object.WriteObj("out.obj");
 			break;

@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <assert.h>
 
+#include <time.h>
+
 extern float gScale;
 
 #if USE_MEM_POOL
@@ -121,19 +123,19 @@ void SS_Face::operator delete(void* p)
  *
  *******************************************************************************************/
 
-bool operator!=( SS_Vertex*& v, const Vertex &cv )
-{
-	return ( v->cv != &cv );
-}
+//bool operator!=( SS_Vertex*& v, const Vertex &cv )
+//{
+//	return ( v->cv != &cv );
+//}
 bool operator!=( SS_Edge*& e, const SS_VertexPair &vp )
 {
 	return ( !( ( e->vertices[0] == vp.first || e->vertices[0] == vp.second )
 		&& ( e->vertices[1] == vp.first || e->vertices[1] == vp.second ) ) );
 }
-bool operator==( SS_Vertex*& v, const Vertex &cv )
-{
-	return ( v->cv == &cv );
-}
+//bool operator==( SS_Vertex*& v, const Vertex &cv )
+//{
+//	return ( v->cv == &cv );
+//}
 bool operator==( SS_Edge*& e, const SS_VertexPair &vp )
 {
 	return ( ( e->vertices[0] == vp.first || e->vertices[0] == vp.second )
@@ -213,109 +215,109 @@ void SS_Surface::Reset()
 	}
 	faces.clear();
 
-	vList.clear();
+	//vList.clear();
 }
 
-void SS_Surface::AddFace( Vertex *cv1, Vertex *cv2, Vertex *cv3 )
-{
-	if ( subdivisionLevel != 0 )
-		assert( false && "Can't add faces after surface has been subdivided!" );
+//void SS_Surface::AddFace( Vertex *cv1, Vertex *cv2, Vertex *cv3 )
+//{
+//	if ( subdivisionLevel != 0 )
+//		assert( false && "Can't add faces after surface has been subdivided!" );
+//
+//	SS_Vertex *v1, *v2, *v3;
+//	SS_VertexList::iterator v_itr;
+//	SS_Edge *e1, *e2, *e3;
+//	SS_EdgeList::iterator e_itr;
+//
+//	// Find the vertices in the list, or insert them
+//	if ( vertices.end() == ( v_itr = find( vertices.begin(), vertices.end(), *cv1 ) ) )
+//		v1 = _AddVertex( cv1 );
+//	else
+//		v1 = *v_itr;//find it in the list
+//	if ( vertices.end() == ( v_itr = find( vertices.begin(), vertices.end(), *cv2 ) ) )
+//		v2 = _AddVertex( cv2 );
+//	else
+//		v2 = *v_itr;
+//	if ( vertices.end() == ( v_itr = find( vertices.begin(), vertices.end(), *cv3 ) ) )
+//		v3 = _AddVertex( cv3 );
+//	else
+//		v3 = *v_itr;
+//
+//	// Find the edges in the list, or insert them
+//	if ( edges.end() == 
+//				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v1, v2 ) ) ) )
+//		e1 = _AddEdge( v1, v2 );
+//	else
+//		e1 = *e_itr;
+//	if ( edges.end() == 
+//				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v2, v3 ) ) ) )
+//		e2 = _AddEdge( v2, v3 );
+//	else
+//		e2 = *e_itr;
+//	if ( edges.end() == 
+//				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v3, v1 ) ) ) )
+//		e3 = _AddEdge( v3, v1 );
+//	else
+//		e3 = *e_itr;
+//
+//	SS_Face *newFace = new SS_Face;
+//	assert( newFace );
+//	newFace->vertices[0] = v1;
+//	newFace->vertices[1] = v2;
+//	newFace->vertices[2] = v3;
+//	newFace->edges[0] = e1;
+//	newFace->edges[1] = e2;
+//	newFace->edges[2] = e3;
+//	newFace->UpdateCentroid();
+//	faces.push_back( newFace );
+//
+//	// Calculate the face normal
+//	Vector normal;
+//	normal = ( v2->pos - v1->pos ).Cross( v3->pos - v1->pos );
+//	normal.Normalize();
+//	// Set the face normals
+//	v1->normal = normal;
+//	v2->normal = normal;
+//	v3->normal = normal;
+//
+//	v1->faces.push_back(newFace);
+//	v2->faces.push_back(newFace);
+//	v3->faces.push_back(newFace);
+//	/*v1->faces[ v1->numFaces++ ] = newFace;
+//	assert( v1->numFaces <= 6 );
+//	v2->faces[ v2->numFaces++ ] = newFace;
+//	assert( v2->numFaces <= 6 );
+//	v3->faces[ v3->numFaces++ ] = newFace;
+//	assert( v3->numFaces <= 6 );*/
+//}
 
-	SS_Vertex *v1, *v2, *v3;
-	SS_VertexList::iterator v_itr;
-	SS_Edge *e1, *e2, *e3;
-	SS_EdgeList::iterator e_itr;
-
-	// Find the vertices in the list, or insert them
-	if ( vertices.end() == ( v_itr = find( vertices.begin(), vertices.end(), *cv1 ) ) )
-		v1 = _AddVertex( cv1 );
-	else
-		v1 = *v_itr;//find it in the list
-	if ( vertices.end() == ( v_itr = find( vertices.begin(), vertices.end(), *cv2 ) ) )
-		v2 = _AddVertex( cv2 );
-	else
-		v2 = *v_itr;
-	if ( vertices.end() == ( v_itr = find( vertices.begin(), vertices.end(), *cv3 ) ) )
-		v3 = _AddVertex( cv3 );
-	else
-		v3 = *v_itr;
-
-	// Find the edges in the list, or insert them
-	if ( edges.end() == 
-				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v1, v2 ) ) ) )
-		e1 = _AddEdge( v1, v2 );
-	else
-		e1 = *e_itr;
-	if ( edges.end() == 
-				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v2, v3 ) ) ) )
-		e2 = _AddEdge( v2, v3 );
-	else
-		e2 = *e_itr;
-	if ( edges.end() == 
-				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v3, v1 ) ) ) )
-		e3 = _AddEdge( v3, v1 );
-	else
-		e3 = *e_itr;
-
-	SS_Face *newFace = new SS_Face;
-	assert( newFace );
-	newFace->vertices[0] = v1;
-	newFace->vertices[1] = v2;
-	newFace->vertices[2] = v3;
-	newFace->edges[0] = e1;
-	newFace->edges[1] = e2;
-	newFace->edges[2] = e3;
-	newFace->UpdateCentroid();
-	faces.push_back( newFace );
-
-	// Calculate the face normal
-	Vector normal;
-	normal = ( v2->pos - v1->pos ).Cross( v3->pos - v1->pos );
-	normal.Normalize();
-	// Set the face normals
-	v1->normal = normal;
-	v2->normal = normal;
-	v3->normal = normal;
-
-	v1->faces.push_back(newFace);
-	v2->faces.push_back(newFace);
-	v3->faces.push_back(newFace);
-	/*v1->faces[ v1->numFaces++ ] = newFace;
-	assert( v1->numFaces <= 6 );
-	v2->faces[ v2->numFaces++ ] = newFace;
-	assert( v2->numFaces <= 6 );
-	v3->faces[ v3->numFaces++ ] = newFace;
-	assert( v3->numFaces <= 6 );*/
-}
-
-SS_Vertex* SS_Surface::_AddVertex( Vertex *cv )
-{
-	// Make sure that this vertex is not already in the list
-	assert( vertices.end() == find( vertices.begin(), vertices.end(), *cv ) );
-
-	SS_Vertex *newVertex = new SS_Vertex;
-	assert( newVertex );
-
-	newVertex->creationLevel = subdivisionLevel;
-	newVertex->cv = cv;
-	newVertex->pos = cv->pos;
-	newVertex->texel = cv->texel.ToPoint();
-
-	vertices.push_back( newVertex );
-	
-	newVertex->index = cv->index;
-
-	return newVertex;
-}
+//SS_Vertex* SS_Surface::_AddVertex( Vertex *cv )
+//{
+//	// Make sure that this vertex is not already in the list
+//	assert( vertices.end() == find( vertices.begin(), vertices.end(), *cv ) );
+//
+//	SS_Vertex *newVertex = new SS_Vertex;
+//	assert( newVertex );
+//
+//	newVertex->creationLevel = subdivisionLevel;
+//	newVertex->cv = cv;
+//	newVertex->pos = cv->pos;
+//	newVertex->texel = cv->texel.ToPoint();
+//
+//	vertices.push_back( newVertex );
+//	
+//	newVertex->index = cv->index;
+//
+//	return newVertex;
+//}
 
 SS_Edge* SS_Surface::_AddEdge( SS_Vertex *v1, SS_Vertex *v2 )
 {
 	// Make sure these are distinct vertices
-	assert( v1 != v2 );
+	assert( (v1 != v2) && (v1 >= 0 && v1 < vertices.size()) && (v2 >= 0 && v2 < vertices.size()) );
 
 	// Make sure the end points are in the list
-	assert( vertices.end() != find( vertices.begin(), vertices.end(), v1 ) );
-	assert( vertices.end() != find( vertices.begin(), vertices.end(), v2 ) );
+	//assert( vertices.end() != find( vertices.begin(), vertices.end(), v1 ) );
+	//assert( vertices.end() != find( vertices.begin(), vertices.end(), v2 ) );
 
 	assert ( edges.end() == find( edges.begin(), edges.end(), SS_VertexPair( v1, v2 ) ) );
 
@@ -388,7 +390,7 @@ void SS_Surface::SubdivideFace( SS_Face *f )
 	SS_Face *origFace = f;
 
 	// Find the new vertices that were created inside this face
-	SS_Vertex *v1, *v2, *v3;
+	SS_Vertex *v1 = NULL, *v2 = NULL, *v3 = NULL;
 	v1 = f->vertices[0]->GetNewVertexInEdge( f->vertices[1] );
 	if ( v1 == f->vertices[0] )
 	{
@@ -505,40 +507,49 @@ void SS_Surface::RepositionVertex( SS_Vertex *v )
 void SS_Surface::Subdivide()
 {
 	subdivisionLevel++;
-
+	clock_t start, finish;
+	double duration;
 	// Linear subdivision of edges
 	SS_EdgeList::iterator edge_itr = edges.begin();
 	int numEdges = edges.size();
 	int numVertices = vertices.size();
+	start = clock();
 	for( int i = 0; i < numEdges; i++, edge_itr++ )
 	{
 		// Only subdivide old edges (ones not attached to a new vertex)
 		if ( (*edge_itr)->vertices[0]->creationLevel != subdivisionLevel
 					&& (*edge_itr)->vertices[1]->creationLevel != subdivisionLevel )
 			SubdivideEdge( *edge_itr );
-		else
-		{
-			printf("fuck you\n");
-			getchar();
-		}
 	}
+	finish = clock();
+	duration = (double)(finish-start)/CLOCKS_PER_SEC;
+	printf("subdivide edge: %lfs %ld\n", duration, (finish-start));
 
 	// Create the new faces / Connect the new vertices
 	SS_FaceList::iterator face_itr = faces.begin();
 	int orinumfaces = faces.size();
+	start = clock();
 	for( int i = 0; i < orinumfaces; i++, face_itr++ )
 	{
 		//printf("%d %d\n",faces.size(), i);
 		// Connect the new vertices into faces
 		SubdivideFace( *face_itr );
 	}
-	
+	finish = clock();
+	duration = (double)(finish-start)/CLOCKS_PER_SEC;
+	printf("subdivide face: %lfs %ld\n", duration, (finish-start));
+
 	// Reposition new vertices
 	SS_VertexList::iterator vertex_itr = vertices.begin();
+	start = clock();
 	for( int i = 0; i < vertices.size(); i++, vertex_itr++ )
 	{
 		RepositionVertex( *vertex_itr );
 	}
+	finish = clock();
+	duration = (double)(finish-start)/CLOCKS_PER_SEC;
+	printf("reposition: %lfs %ld\n", duration, (finish-start));
+
 	vertex_itr = vertices.begin();
 	for( int i = 0; i < vertices.size(); i++, vertex_itr++ )
 		(*vertex_itr)->pos = (*vertex_itr)->newPos;
@@ -662,7 +673,7 @@ void SS_Surface::Draw( DRAWFLAGS flags )
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 }
 
-void SS_Surface::ReadObj(const char* filename, float scale)
+void SS_Surface::ReadObjFromFile(const char* filename, float scale)
 {
 	Reset();
 #ifdef _CRT_SECURE_NO_WARNINGS
@@ -694,11 +705,11 @@ void SS_Surface::ReadObj(const char* filename, float scale)
 			p.x *= scale;
 			p.y *= scale;
 			p.z *= scale;
-			Vertex *v = new Vertex();
-			v->pos = p;
+			//Vertex *v = new Vertex();
+			//v->pos = p;
 
-			v->index = vList.size()+1;
-			vList.push_back(v);
+			//v->index = vList.size()+1;
+			//vList.push_back(v);
 		}
 		else if(str[i] = 'f')
 		{
@@ -708,7 +719,7 @@ void SS_Surface::ReadObj(const char* filename, float scale)
 #else
 			sscanf_s(str+i+1, "%d%d%d", &v1, &v2, &v3);
 #endif
-			AddFace(vList[v1-1], vList[v2-1], vList[v3-1]);
+			//AddFace(vList[v1-1], vList[v2-1], vList[v3-1]);
 		}
 	}
 	fclose(fp);
@@ -733,4 +744,111 @@ void SS_Surface::WriteObj(const char* filename)
 		fprintf(fp, "f %d %d %d\n", (*fitr)->vertices[0]->index, (*fitr)->vertices[1]->index, (*fitr)->vertices[2]->index);
 	}
 	fclose(fp);
+}
+
+void SS_Surface::ReadObj(const char* filename, float scale)
+{
+	Reset();
+#ifdef _CRT_SECURE_NO_WARNINGS
+	FILE* fp = fopen(filename, "r");
+#else
+	FILE* fp;
+	fopen_s(&fp, filename, "r");
+#endif
+	if(!fp)
+	{
+		printf("open %s failed\n", filename);
+		exit(0);
+	}
+	char str[256];
+	while(!feof(fp))
+	{
+		fgets(str, 255, fp);
+		int i = skipSpace(str);
+		if(i == -1 || str[i] == '\n' || str[i] == '#')
+			continue;
+		if(str[i] == 'v')
+		{
+			//Point p;
+			SS_Vertex* v = new SS_Vertex();
+#ifdef _CRT_SECURE_NO_WARNINGS
+			sscanf(str+i+1, "%lf%lf%lf", &p.x, &p.y, &p.z);
+#else
+			sscanf_s(str+i+1, "%lf%lf%lf", &v->pos.x, &v->pos.y, &v->pos.z);
+#endif
+			v->pos.x *= scale;
+			v->pos.y *= scale;
+			v->pos.z *= scale;
+
+			vertices.push_back(v);
+			v->creationLevel = subdivisionLevel;
+			v->index = vertices.size();
+		}
+		else if(str[i] = 'f')
+		{
+			int v1, v2, v3;
+#ifdef _CRT_SECURE_NO_WARNINGS
+			sscanf(str+i+1, "%d%d%d", &v1, &v2, &v3);
+#else
+			sscanf_s(str+i+1, "%d%d%d", &v1, &v2, &v3);
+#endif
+			AddFaceOfIndex(v1-1, v2-1, v3-1);
+		}
+	}
+	fclose(fp);
+}
+
+void SS_Surface::AddFaceOfIndex(int i1, int i2, int i3)
+{
+	SS_Vertex *v1 = vertices[i1], *v2 = vertices[i2], *v3 = vertices[i3];
+	SS_VertexList::iterator v_itr;
+	SS_Edge *e1, *e2, *e3;
+	SS_EdgeList::iterator e_itr;
+
+	// Find the edges in the list, or insert them
+	if ( edges.end() == 
+				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v1, v2 ) ) ) )
+		e1 = _AddEdge( v1, v2 );
+	else
+		e1 = *e_itr;
+	if ( edges.end() == 
+				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v2, v3 ) ) ) )
+		e2 = _AddEdge( v2, v3 );
+	else
+		e2 = *e_itr;
+	if ( edges.end() == 
+				( e_itr = find( edges.begin(), edges.end(), SS_VertexPair( v3, v1 ) ) ) )
+		e3 = _AddEdge( v3, v1 );
+	else
+		e3 = *e_itr;
+
+	SS_Face *newFace = new SS_Face;
+	assert( newFace );
+	newFace->vertices[0] = v1;
+	newFace->vertices[1] = v2;
+	newFace->vertices[2] = v3;
+	newFace->edges[0] = e1;
+	newFace->edges[1] = e2;
+	newFace->edges[2] = e3;
+	newFace->UpdateCentroid();
+	faces.push_back( newFace );
+
+	// Calculate the face normal
+	Vector normal;
+	normal = ( v2->pos - v1->pos ).Cross( v3->pos - v1->pos );
+	normal.Normalize();
+	// Set the face normals
+	v1->normal = normal;
+	v2->normal = normal;
+	v3->normal = normal;
+
+	v1->faces.push_back(newFace);
+	v2->faces.push_back(newFace);
+	v3->faces.push_back(newFace);
+	/*v1->faces[ v1->numFaces++ ] = newFace;
+	assert( v1->numFaces <= 6 );
+	v2->faces[ v2->numFaces++ ] = newFace;
+	assert( v2->numFaces <= 6 );
+	v3->faces[ v3->numFaces++ ] = newFace;
+	assert( v3->numFaces <= 6 );*/
 }
