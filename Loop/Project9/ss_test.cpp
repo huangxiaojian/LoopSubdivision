@@ -3,15 +3,20 @@
 
 #include <math.h>
 #include <time.h>
+#include <string>
 
-SS_Surface object;
-Point cameraPos(0, 0, -350);
+LS_Surface object;
+LSPoint cameraPos(0, 0, -350);
 
 float gScale = 800;
 
 int last_x, last_y, spin_x, spin_y;
 
 clock_t start, finish;
+
+using namespace std;
+
+string filename = "120";
 
 void display(void)
 {
@@ -22,7 +27,7 @@ void display(void)
 	glTranslatef(cameraPos.x, cameraPos.y, cameraPos.z);
 	glRotatef((float)spin_x, 0.0, 1.0, 0.0);
 	glRotatef((float)spin_y, 1.0, 0.0, 0.0);
-	object.Draw((SS_Surface::DRAWFLAGS) (SS_Surface::WIREFRAME | SS_Surface::SOLID));
+	object.Draw((LS_Surface::DRAWFLAGS) (LS_Surface::WIREFRAME | LS_Surface::SOLID));
 	glPopMatrix();
 	glutSwapBuffers();
 }
@@ -50,19 +55,18 @@ void motion(int x, int y)
 	glutPostRedisplay();
 }
 
-
 //void InitShape(int shape = 1)
 //{
 //	Vertex v1, v2, v3, v4, v5, v6, v7, v8;
 //
-//	v1.pos = Point(-30, 30, 30);
-//	v2.pos = Point(-30, 30, -30);
-//	v3.pos = Point( 30, 30, -30);
-//	v4.pos = Point( 30, 30, 30);
-//	v5.pos = Point(-30, -30, 30);
-//	v6.pos = Point(-30, -30, -30);
-//	v7.pos = Point( 30, -30, -30);
-//	v8.pos = Point( 30, -30, 30);
+//	v1.pos = LSPoint(-30, 30, 30);
+//	v2.pos = LSPoint(-30, 30, -30);
+//	v3.pos = LSPoint( 30, 30, -30);
+//	v4.pos = LSPoint( 30, 30, 30);
+//	v5.pos = LSPoint(-30, -30, 30);
+//	v6.pos = LSPoint(-30, -30, -30);
+//	v7.pos = LSPoint( 30, -30, -30);
+//	v8.pos = LSPoint( 30, -30, 30);
 //
 //	object.Reset();
 //
@@ -93,8 +97,8 @@ void motion(int x, int y)
 //			/*
 //			 * Triangular Pyramid
 //			 */
-//			v1.pos = Point(0, 30, 0);
-//			v2.pos = Point(0, -30, 0);
+//			v1.pos = LSPoint(0, 30, 0);
+//			v2.pos = LSPoint(0, -30, 0);
 //			object.AddFace( &v1, &v6, &v5 );
 //			object.AddFace( &v1, &v7, &v6 );
 //			object.AddFace( &v1, &v8, &v7 );
@@ -116,7 +120,7 @@ void motion(int x, int y)
 //
 //			for( int i = 0; i < MESH_SIZE; i++ )
 //				for( int j = 0; j < MESH_SIZE; j++ )
-//					mesh[i][j].pos = Point(
+//					mesh[i][j].pos = LSPoint(
 //							 -30 + (i/MESH_SIZE * 60)
 //							, -20 + (j/MESH_SIZE * 40)
 //							, 20 * sin( 3.1415926 / 180.0 * i * 2 * 360.0 / MESH_SIZE ) );
@@ -131,7 +135,6 @@ void motion(int x, int y)
 //	}
 //}
 
-
 void renderScene(void)
 {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -139,8 +142,8 @@ void renderScene(void)
 	glLoadIdentity();
 	glTranslatef(cameraPos.x, cameraPos.y, cameraPos.z);
 
-	object.Draw( (SS_Surface::DRAWFLAGS)
-					( SS_Surface::WIREFRAME | SS_Surface::SOLID) );
+	object.Draw( (LS_Surface::DRAWFLAGS)
+					( LS_Surface::WIREFRAME | LS_Surface::SOLID) );
 
 	glutSwapBuffers();
 }
@@ -202,8 +205,10 @@ void keyboard(unsigned char key, int x, int y)
 		//case 51: // Number 3
 		//	InitShape(3);
 		//	break;
+
 		case 'w':
-			object.WriteObj("out.obj");
+			object.WriteObj((filename+"_out.obj").c_str());
+			printf("write file %s\n", (filename+"_out.obj").c_str());
 			break;
 	}
 
@@ -212,11 +217,21 @@ void keyboard(unsigned char key, int x, int y)
 
 int main(int argc, char **argv)
 {
+	if(argc > 1)
+		filename = string(argv[1]);
+	if(argc == 3 && argv[2][0] == 'd')
+	{
+		object.ReadObj((filename+".obj").c_str(), 1.0);
+		object.Subdivide();
+		object.WriteObj((filename+"_out.obj").c_str());
+		printf("write file %s\n", (filename+"_out.obj").c_str());
+		return 0;
+	}
 	// Init OpenGL
 	glutInit(&argc, argv);
 	glutInitDisplayMode( GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB );
 	glutInitWindowSize(640, 480);
-	glutCreateWindow("Surface Subidivision Test");;
+	glutCreateWindow("Surface Subdivision Test");;
 
 	//glutDisplayFunc(&renderScene);
 	glutDisplayFunc(display);
@@ -227,9 +242,8 @@ int main(int argc, char **argv)
 
 	// Set-up the basic shape
 	//InitShape(1);
-	if(argc > 1)
-		gScale = atof(argv[1]);
-	object.ReadObj("face.obj", gScale);
+	
+	object.ReadObj((filename+".obj").c_str(), 1.0);
 
 	glutMainLoop();
 

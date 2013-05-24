@@ -1,21 +1,19 @@
 #ifndef SUBDIVISION_H
 #define SUBDIVISION_H
 
-#include "Vector.h"
+#include "LSVector.h"
 #include <vector>
 #include <string.h>
 #include <stdio.h>
 #include <GL/glut.h>
 
-class SS_Edge;
-class SS_Face;
-class SS_Vertex;
+class LS_Edge;
+class LS_Face;
+class LS_Vertex;
 
 using namespace std;
 
-typedef pair<SS_Vertex*, SS_Vertex*> SS_VertexPair;
-
-#define INFO
+typedef pair<LS_Vertex*, LS_Vertex*> LS_VertexPair;
 
 #define USE_MEM_POOL 1
 
@@ -25,82 +23,50 @@ typedef pair<SS_Vertex*, SS_Vertex*> SS_VertexPair;
 	#define MP_FACES	50000
 #endif
 
-// Feel free to replace this class with one that integrates better with your project
-//class Vertex
-//{
-//public:
-//	Vertex(){index = -1;}
-//	Point pos;
-//	Vector texel;
-//	int index;
-//};
-
-class SS_Vertex
+class LS_Vertex
 {
 public:
-	/*SS_Vertex() : numEdges(0), numFaces(0), cv(0)
-	{ 
-		memset( edges, 0, sizeof(void*)*6 );
-		memset( faces, 0, sizeof(void*)*6 );
-	}*/
-	SS_Vertex(){}
+	LS_Vertex(){}
 	int index;
 private:
-	//char numEdges;
-	//SS_Edge *edges[60];
-	vector<SS_Edge*> edges;
+	vector<LS_Edge*> edges;
 
-	//char numFaces;
-	//SS_Face *faces[60];
-	vector<SS_Face*> faces;
+	vector<LS_Face*> faces;
 
-	Point pos;
-	Point newPos;
+	LSPoint pos;
+	LSPoint newPos;
 
-	Point texel;
-	Vector normal;
+	LSPoint texel;
+	LSVector normal;
 
 	int creationLevel;
 
-	//const Vertex *cv;
-
-	SS_Edge** GetEdgePointer( SS_Edge *ptr );
-	SS_Face** GetFacePointer( SS_Face *ptr );
-	SS_Vertex* GetNewVertexInEdge( SS_Vertex *v );
+	LS_Edge** GetEdgePointer( LS_Edge *ptr );
+	LS_Face** GetFacePointer( LS_Face *ptr );
+	LS_Vertex* GetNewVertexInEdge( LS_Vertex *v );
 
 	void UpdateNormal();
 
-	friend class SS_Surface;
-	friend class SS_Face;
-	//friend bool operator!=( SS_Vertex*& v, const Vertex &cv );
-	//friend bool operator==( SS_Vertex*& v, const Vertex &cv );
+	friend class LS_Surface;
+	friend class LS_Face;
 
 #if USE_MEM_POOL
 	void* operator new(size_t bytes);
 	void operator delete(void* p);
 	bool mp_inuse;
 #endif
-
-#ifdef INFO
-	void PrintAround();
-	void PrintAround(FILE* fp);
-#endif
-
 };
-typedef vector<SS_Vertex*> SS_VertexList;
-
-//bool operator!=( SS_Vertex*& v, const Vertex &cv );
-//bool operator==( SS_Vertex*& v, const Vertex &cv );
+typedef vector<LS_Vertex*> LS_VertexList;
 
 
-class SS_Face
+class LS_Face
 {
 private:
-	SS_Vertex *vertices[3];
-	SS_Edge *edges[3];
+	LS_Vertex *vertices[3];
+	LS_Edge *edges[3];
 
-	Vector centroid;
-	Vector normal;
+	LSVector centroid;
+	LSVector normal;
 
 	void UpdateCentroid()
 	{
@@ -115,8 +81,8 @@ private:
 		normal.Normalize();
 	}
 
-	friend class SS_Surface;
-	friend class SS_Vertex;
+	friend class LS_Surface;
+	friend class LS_Vertex;
 
 #if USE_MEM_POOL
 	void* operator new(size_t bytes);
@@ -124,18 +90,18 @@ private:
 	bool mp_inuse;
 #endif
 };
-typedef vector<SS_Face*> SS_FaceList;
+typedef vector<LS_Face*> LS_FaceList;
 
-class SS_Edge
+class LS_Edge
 {
 public:
-	SS_Edge() : oldVertex(0)								{}
+	LS_Edge() : oldVertex(0)								{}
 
 private:
-	SS_Vertex *vertices[2];
-	SS_Vertex *oldVertex;
+	LS_Vertex *vertices[2];
+	LS_Vertex *oldVertex;
 
-	SS_Vertex** GetVertexPointer( SS_Vertex *v )
+	LS_Vertex** GetVertexPointer( LS_Vertex *v )
 	{
 		if ( vertices[0] == v )
 			return &vertices[0];
@@ -143,10 +109,10 @@ private:
 			return &vertices[1];
 	}
 
-	friend class SS_Surface;
-	friend class SS_Vertex;
-	friend bool operator!=( SS_Edge*& e, const SS_VertexPair &vp );
-	friend bool operator==( SS_Edge*& e, const SS_VertexPair &vp );
+	friend class LS_Surface;
+	friend class LS_Vertex;
+	friend bool operator!=( LS_Edge*& e, const LS_VertexPair &vp );
+	friend bool operator==( LS_Edge*& e, const LS_VertexPair &vp );
 
 #if USE_MEM_POOL
 	void* operator new(size_t bytes);
@@ -154,16 +120,16 @@ private:
 	bool mp_inuse;
 #endif
 };
-typedef vector<SS_Edge*> SS_EdgeList;
+typedef vector<LS_Edge*> LS_EdgeList;
 
-bool operator!=( SS_Edge*& e, const SS_VertexPair &vp );
-bool operator==( SS_Edge*& e, const SS_VertexPair &vp );
+bool operator!=( LS_Edge*& e, const LS_VertexPair &vp );
+bool operator==( LS_Edge*& e, const LS_VertexPair &vp );
 
 
-class SS_Surface
+class LS_Surface
 {
 public:
-	SS_Surface() : subdivisionLevel(0)				
+	LS_Surface() : subdivisionLevel(0)				
 	{
 #if USE_MEM_POOL
 		vertices.reserve( MP_VERTS );
@@ -171,15 +137,14 @@ public:
 		faces.reserve( MP_FACES );
 #endif
 	}
-	~SS_Surface();
+	~LS_Surface();
 
 	void Reset();
-	void ReadObjFromFile(const char* filename, float scale = 1.0);
+	//void ReadObjFromFile(const char* filename, float scale = 1.0);
 	void ReadObj(const char* filename, float scale = 1.0);
 	void WriteObj(const char* filename);
 
 	void AddFaceOfIndex(int i1,int i2, int i3);
-	//void AddFace( Vertex *cv1, Vertex *cv2, Vertex *cv3 );
 	void UpdateNormals();
 
 	void Subdivide();
@@ -194,12 +159,11 @@ public:
 	void Draw( DRAWFLAGS flags = SOLID );
 
 protected:
-	//SS_Vertex* _AddVertex( Vertex *cv );
-	SS_Edge*  _AddEdge( SS_Vertex *v1, SS_Vertex *v2 );
+	LS_Edge*  _AddEdge( LS_Vertex *v1, LS_Vertex *v2 );
 
-	void SubdivideEdge( SS_Edge *e );
-	void SubdivideFace( SS_Face *f );
-	void RepositionVertex( SS_Vertex *v );
+	void SubdivideEdge( LS_Edge *e );
+	void SubdivideFace( LS_Face *f );
+	void RepositionVertex( LS_Vertex *v );
 
 	int skipSpace(char *str)
 	{
@@ -210,13 +174,11 @@ protected:
 	}
 
 protected:
-	SS_VertexList vertices;
-	SS_EdgeList edges;
-	SS_FaceList faces;
+	LS_VertexList vertices;
+	LS_EdgeList edges;
+	LS_FaceList faces;
 
 	int subdivisionLevel;
-
-	//vector<Vertex*> vList;
 };
 
 #endif // SUBDIVISION_H

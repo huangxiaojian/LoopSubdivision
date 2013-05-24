@@ -21,7 +21,7 @@
     <ClCompile Include="Subdivision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vector.cpp">
+    <ClCompile Include="LSVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <ClInclude Include="Subdivision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
+    <ClInclude Include="LSVector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

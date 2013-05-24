@@ -11,17 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="LSVector.cpp" />
     <ClCompile Include="ss_test.cpp" />
     <ClCompile Include="Subdivision.cpp" />
-    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LSVector.h" />
     <ClInclude Include="Subdivision.h" />
-    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0BDAF9BA-CFF9-4FAD-AF78-7E36F5225B8A}</ProjectGuid>
     <RootNamespace>Project9</RootNamespace>
+    <ProjectName>LS</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
